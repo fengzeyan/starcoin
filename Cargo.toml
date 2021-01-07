@@ -90,6 +90,9 @@ members = [
     "cmd/indexer"
 ]
 
+default-members = [
+]
+
 [profile.dev]
 panic = "unwind"
 

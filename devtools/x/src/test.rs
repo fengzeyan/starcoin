@@ -1,9 +1,6 @@
 // Copyright (c) The Diem Core Contributors
 // SPDX-License-Identifier: Apache-2.0
 
-// Copyright (c) The Starcoin Core Contributors
-// SPDX-License-Identifier: Apache-2.0
-
 use crate::{
     cargo::{build_args::BuildArgs, selected_package::SelectedPackageArgs, CargoCommand},
     context::XContext,
@@ -208,10 +205,6 @@ fn exec_grcov(html_cov_path: &PathBuf) -> Result<()> {
         .arg("/*")
         .arg("--ignore")
         .arg("x/*")
-        .arg("--ignore")
-        .arg("benchmarks/*")
-        .arg("--ignore")
-        .arg("vm/transaction-builder-generator")
         .arg("--ignore")
         .arg("testsuite/*")
         .arg("--ignore-not-existing")

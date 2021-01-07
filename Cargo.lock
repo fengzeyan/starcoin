@@ -8620,7 +8620,6 @@ dependencies = [
  "serde_json",
  "structopt 0.3.21",
  "toml",
- "x",
  "x-core",
  "x-lint",
 ]
@@ -10228,32 +10227,6 @@ checksum = "d59cefebd0c892fa2dd6de581e937301d8552cb44489cdff035c6187cb63fa5e"
 dependencies = [
  "winapi 0.2.8",
  "winapi-build",
-]
-
-[[package]]
-name = "x"
-version = "0.1.0"
-source = "git+https://github.com/starcoinorg/diem?rev=a69729b2d54af44d2f779bcf167e3f6d681a9821#a69729b2d54af44d2f779bcf167e3f6d681a9821"
-dependencies = [
- "anyhow",
- "chrono",
- "colored-diff",
- "determinator",
- "diem-workspace-hack",
- "env_logger 0.8.2",
- "globset",
- "guppy",
- "indexmap",
- "indoc",
- "log 0.4.11",
- "rayon",
- "regex",
- "serde",
- "serde_json",
- "structopt 0.3.21",
- "toml",
- "x-core",
- "x-lint",
 ]
 
 [[package]]

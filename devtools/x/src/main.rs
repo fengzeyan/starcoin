@@ -9,74 +9,28 @@
 use chrono::Local;
 use env_logger::{self, fmt::Color};
 use log::Level;
-use std::path::Path;
 use std::{boxed::Box, io::Write};
 use structopt::StructOpt;
 
-pub mod bench {
-    pub use diem_x::bench::*;
-}
-pub mod build {
-    pub use diem_x::build::*;
-}
-pub mod check {
-    pub use diem_x::check::*;
-}
-pub mod changed_since {
-    pub use diem_x::changed_since::*;
-}
-pub mod clippy {
-    pub use diem_x::clippy::*;
-}
-pub mod config {
-    pub use diem_x::config::*;
-}
-pub mod context {
-    pub use diem_x::context::*;
-}
-pub mod diff_summary {
-    pub use diem_x::diff_summary::*;
-}
-pub mod fix {
-    pub use diem_x::fix::*;
-}
-pub mod fmt {
-    pub use diem_x::fmt::*;
-}
-pub mod generate_summaries {
-    pub use diem_x::generate_summaries::*;
-}
-pub mod installer {
-    pub use diem_x::installer::*;
-}
-
-pub mod lint {
-    pub use diem_x::lint::*;
-}
-pub mod playground {
-    pub use diem_x::playground::*;
-}
-pub mod test;
-
-pub mod cargo {
-    pub use diem_x::cargo::*;
-}
-pub mod tools {
-    pub use diem_x::tools::*;
-}
-
-pub mod utils {
-    pub use diem_x::utils::*;
-}
-
-pub fn project_root() -> &'static Path {
-    Path::new(&env!("CARGO_MANIFEST_DIR"))
-        .ancestors()
-        .nth(2)
-        .unwrap()
-}
-
 type Result<T> = anyhow::Result<T>;
+pub mod bench;
+pub mod build;
+pub mod cargo;
+pub mod changed_since;
+pub mod check;
+pub mod clippy;
+pub mod config;
+pub mod context;
+pub mod diff_summary;
+pub mod fix;
+pub mod fmt;
+pub mod generate_summaries;
+pub mod installer;
+pub mod lint;
+pub mod playground;
+pub mod test;
+pub mod tools;
+pub mod utils;
 
 #[derive(Debug, StructOpt)]
 struct Args {

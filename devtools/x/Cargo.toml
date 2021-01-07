@@ -26,4 +26,4 @@ indexmap = "1.6.1"
 x-core = { package="x-core", git = "https://github.com/starcoinorg/diem", rev="a69729b2d54af44d2f779bcf167e3f6d681a9821" }
 x-lint = { package="x-lint", git = "https://github.com/starcoinorg/diem", rev="a69729b2d54af44d2f779bcf167e3f6d681a9821" }
 diem-workspace-hack = { package="diem-workspace-hack", git = "https://github.com/starcoinorg/diem", rev="a69729b2d54af44d2f779bcf167e3f6d681a9821" }
-diem-x = { package="x", git = "https://github.com/starcoinorg/diem", rev="a69729b2d54af44d2f779bcf167e3f6d681a9821" }
+#diem-x = { package="x", git = "https://github.com/starcoinorg/diem", rev="a69729b2d54af44d2f779bcf167e3f6d681a9821" }

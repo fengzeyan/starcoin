@@ -1,7 +1,6 @@
-tools = [
-   ["sccache", "0.2.13"],
-   ["grcov", "0.5.15"],
-]
+[grcov.installer]
+version = "0.5.15"
+
 
 [system-tests]
 transaction-builder-generator = { path = "vm/transaction-builder-generator" }
@@ -11,6 +10,26 @@ benchmarks = { path = "benchmarks" }
 [cargo]
 toolchain = "nightly"
 flags = "-Zfeatures=all"
+
+[cargo.sccache]
+bucket = "ci-artifacts.diem.com"
+prefix = "sccache/diem/"
+public = true
+region = "us-west-2"
+endpoint = "https://s3-us-west-2.amazonaws.com"
+required-cargo-home = "/opt/cargo"
+required-git-home = "/opt/git/diem"
+envs = [
+   #To debug sccache uncomment the two lines below.
+   #["SCCACHE_ERROR_LOG","/tmp/sccache_log"],
+   #["SCCACHE_LOG", "sccache::compiler::compiler=trace,rusoto_core::request=trace"],
+]
+
+[cargo.sccache.installer]
+version = "0.2.14-alpha.0"
+git = "https://github.com/rexhoffman/sccache.git"
+git-rev = "549babdd3866aa60dae01668c42ee00bf1e8c763"
+features = [ "s3" ]
 
 [fix]
 
@@ -46,6 +65,17 @@ version = "v2"
 include-dev = true
 proc-macros-on-target = false
 # Don't set target or host platforms, or omitted packages, for the full set.
+
+[workspace]
+
+# Regex for allowed characters in paths. Regex must have ^ and $ anchors.
+allowed-paths = "^([a-zA-Z0-9._\\-/@:]|-)+$"
+
+whitespace-exceptions = [
+    ".github/actions/*/dist/*",
+    "**/*.exp",
+    "**/*.errmap",
+]
 
 [workspace.enforced-attributes]
 authors = ["Diem Association <opensource@diem.org>"]
@@ -84,17 +114,46 @@ members = [
 # Interesting subsets of the workspace, These are used for generating and
 # checking dependency summaries.
 
-[workspace.subsets.lsr]
+[subsets.lsr]
 # The Diem safety rules TCB.
-members = [
+root-members = [
 ]
 
-[workspace.subsets.lec]
+[subsets.lec]
 # The Diem execution correctness TCB.
-members = [
+root-members = [
 ]
 
-[workspace.subsets.release]
+[subsets.release]
 # The Diem release binaries
-members = [
+root-members = [
 ]
+
+# ---
+# Determinator rules
+# ---
+
+# CI-related files. TODO: maybe have separate rules for local and CI?
+[[determinator.path-rule]]
+globs = [".github/**/*", ".circleci/**/*", "codecov.yml"]
+mark-changed = "all"
+
+# Core devtools files.
+[[determinator.path-rule]]
+globs = ["cargo-toolchain", "cargo-flags", "scripts/dev_setup.sh", "x.toml"]
+mark-changed = "all"
+
+[[determinator.path-rule]]
+# Ignore website and other ancillary files, and scripts not listed above.
+globs = ["developers.diem.com/**/*", "documentation/**/*", "docker/**/*", "specifications/**/*", "scripts/**/*"]
+mark-changed = []
+
+[[determinator.path-rule]]
+# A bunch of images that should be ignored, I guess.
+globs = ["diem.png", ".assets/diem.png", "storage/data.png"]
+mark-changed = []
+
+[[determinator.package-rule]]
+# x controls the build process, so if it changes, build everything.
+on-affected = ["x"]
+mark-changed = "all"
