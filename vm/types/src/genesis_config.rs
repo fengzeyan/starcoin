@@ -1031,7 +1031,7 @@ pub static PROXIMA_CONFIG: Lazy<GenesisConfig> = Lazy::new(|| {
         genesis_block_parameter: GenesisBlockParameterConfig::Static(
             GenesisBlockParameter{
                 parent_hash: HashValue::sha3_256_of(b"starcoin_proxima"),
-                timestamp: 1606984483000,
+                timestamp: 1611648248000,
                 difficulty: 100.into(),
             }
         ),

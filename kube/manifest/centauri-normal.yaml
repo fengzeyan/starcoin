@@ -45,6 +45,10 @@ spec:
         - name: starcoin
           image: starcoin/starcoin:feature-stress
           imagePullPolicy: Always
+          resources:
+            limits:
+              memory: 500Mi
+              cpu:1
           command:
             - bash
             - -c
@@ -66,85 +70,9 @@ spec:
                 configMapKeyRef:
                   name: starcoin-config
                   key: centauri_seed
-        - name: starcoin1
-          image: starcoin/starcoin:feature-stress
-          imagePullPolicy: Always
-          command:
-            - bash
-            - -c
-          args:
-            -
-              rm -rf /sc-data/node1/centauri/starcoin.ipc /sc-data/node1/centauri/starcoindb/db/starcoindb/LOCK /sc-data/node1/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data/node1 --seed $(SEED) --disable-mdns=false --disable-http-rpc --rpc-address 0.0.0.0 --metrics-port=9102 --tcp-port=9861 --websocket-port=9871;
-              ret=$?;
-              if [ $ret -ne 0 ]; then
-              echo "Node start fail, try to remove config.";
-              rm /sc-data/node1/centauri/config.toml;
-              fi;
-          volumeMounts:
-            - name: starcoin-stress-new-volume
-              mountPath: /sc-data
-        - name: starcoin2
-          image: starcoin/starcoin:feature-stress
-          imagePullPolicy: Always
-          command:
-            - bash
-            - -c
-          args:
-            -
-              rm -rf /sc-data/node2/centauri/starcoin.ipc /sc-data/node2/centauri/starcoindb/db/starcoindb/LOCK /sc-data/node2/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data/node2 --seed $(SEED) --disable-mdns=false --disable-http-rpc --rpc-address 0.0.0.0 --metrics-port=9103 --tcp-port=9862 --websocket-port=9872;
-              ret=$?;
-              if [ $ret -ne 0 ]; then
-              echo "Node start fail, try to remove config.";
-              rm /sc-data/node2/centauri/config.toml;
-              fi;
-          volumeMounts:
-            - name: starcoin-stress-new-volume
-              mountPath: /sc-data
-          env:
-            - name: SEED
-              valueFrom:
-                configMapKeyRef:
-                  name: starcoin-config
-                  key: centauri_seed
-        - name: starcoin3
-          image: starcoin/starcoin:feature-stress
-          imagePullPolicy: Always
-          command:
-            - bash
-            - -c
-          args:
-            -
-              rm -rf /sc-data/node3/centauri/starcoin.ipc /sc-data/node3/centauri/starcoindb/db/starcoindb/LOCK /sc-data/node3/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data/node3 --seed $(SEED) --disable-mdns=false --disable-http-rpc --rpc-address 0.0.0.0 --metrics-port=9104 --tcp-port=9863 --websocket-port=9873;
-              ret=$?;
-              if [ $ret -ne 0 ]; then
-              echo "Node start fail, try to remove config.";
-              rm /sc-data/node3/centauri/config.toml;
-              fi;
-          volumeMounts:
-            - name: starcoin-stress-new-volume
-              mountPath: /sc-data
-        - name: starcoin4
-          image: starcoin/starcoin:feature-stress
-          imagePullPolicy: Always
-          command:
-            - bash
-            - -c
-          args:
-            - rm -rf /sc-data/node4/centauri/starcoin.ipc /sc-data/node4/centauri/starcoindb/db/starcoindb/LOCK /sc-data/node4/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data/node4 --seed $(SEED) --disable-mdns=false --disable-http-rpc --rpc-address 0.0.0.0 --metrics-port=9105 --tcp-port=9864 --websocket-port=9874;
-              ret=$?;
-              if [ $ret -ne 0 ]; then
-              echo "Node start fail, try to remove config.";
-              rm /sc-data/node4/centauri/config.toml;
-              fi;
-          volumeMounts:
-            - name: starcoin-stress-new-volume
-              mountPath: /sc-data
       nodeSelector:
         doks.digitalocean.com/node-pool: pool-stress
+
   volumeClaimTemplates:
     - metadata:
         name: starcoin-stress-new-volume
@@ -152,4 +80,4 @@ spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 50Gi
+            storage: 20Gi
