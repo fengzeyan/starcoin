@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: starcoin
-        image: starcoin/starcoin:feature-stress2
+        image: starcoin/starcoin:feature-stress
         imagePullPolicy: Always
         command:
           - bash
@@ -61,6 +61,11 @@ spec:
             sleep 5;
             else
               /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --disable-mdns=false $node_key_flag --rpc-address 0.0.0.0;
+            fi;
+            ret=$?;
+            if [ $ret -ne 0 ]; then
+              echo "Node start fail, try to remove config.";
+              rm /sc-data/centauri/config.toml;
             fi;
         ports:
           - containerPort: 9840
@@ -91,16 +96,18 @@ spec:
                 name: starcoin-config
                 key: start_stress_seed_node
       - name: txfactory
-        image: starcoin/starcoin:feature-stress2
+        image: starcoin/starcoin:feature-stress
         imagePullPolicy: Always
         command:
           - bash
           - -c
         args:
-          - /starcoin/starcoin_txfactory --ipc-path /sc-data/centauri/starcoin.ipc --stress -n 1500 -t 1 -w 1 -i 4000
+          - /starcoin/starcoin_txfactory --ipc-path /sc-data/centauri/starcoin.ipc --stress -n 500 -t 1 -w 1 -i 4000
         volumeMounts:
           - name: starcoin-stress-volume
             mountPath: /sc-data
+      nodeSelector:
+          doks.digitalocean.com/node-pool: node-stress
   volumeClaimTemplates:
   - metadata:
       name: starcoin-stress-volume
