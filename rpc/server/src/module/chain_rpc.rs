@@ -60,7 +60,7 @@ where
             //TODO get chain info from chain service.
             Ok(ChainInfo::new(chain_id, genesis_hash, chain_status).into())
         };
-        Box::new(fut.boxed().map_err(map_err).compat())
+        Box::pin(fut.boxed().map_err(map_err))
     }
 
     fn get_block_by_hash(&self, hash: HashValue) -> FutureResult<Option<BlockView>> {
@@ -72,7 +72,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_block_by_number(&self, number: u64) -> FutureResult<Option<BlockView>> {
@@ -84,7 +84,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_blocks_by_number(
@@ -103,7 +103,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_transaction(
@@ -131,7 +131,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_transaction_info(
@@ -162,7 +162,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_block_txn_infos(&self, block_hash: HashValue) -> FutureResult<Vec<TransactionInfoView>> {
@@ -180,7 +180,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_txn_info_by_block_and_index(
@@ -205,7 +205,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
     fn get_events_by_txn_hash(
         &self,
@@ -218,7 +218,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_events(&self, mut filter: EventFilter) -> FutureResult<Vec<TransactionEventView>> {
@@ -253,28 +253,28 @@ where
         .map_ok(|d| d.into_iter().map(|e| e.into()).collect())
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn current_epoch(&self) -> FutureResult<EpochInfo> {
         let service = self.service.clone();
         let fut = async move { service.epoch_info().await };
 
-        Box::new(fut.boxed().map_err(map_err).compat())
+        Box::pin(fut.boxed().map_err(map_err))
     }
 
     fn get_epoch_info_by_number(&self, number: BlockNumber) -> FutureResult<EpochInfo> {
         let service = self.service.clone();
         let fut = async move { service.get_epoch_info_by_number(number).await };
 
-        Box::new(fut.boxed().map_err(map_err).compat())
+        Box::pin(fut.boxed().map_err(map_err))
     }
 
     fn get_global_time_by_number(&self, number: BlockNumber) -> FutureResult<GlobalTimeOnChain> {
         let service = self.service.clone();
         let fut = async move { service.get_global_time_by_number(number).await };
 
-        Box::new(fut.boxed().map_err(map_err).compat())
+        Box::pin(fut.boxed().map_err(map_err))
     }
 
     fn get_block_by_uncle(&self, uncle_hash: HashValue) -> FutureResult<Option<BlockView>> {
@@ -285,14 +285,14 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn tps(&self, number: Option<BlockNumber>) -> FutureResult<TPS> {
         let service = self.service.clone();
         let fut = async move { service.tps(number).await };
 
-        Box::new(fut.boxed().map_err(map_err).compat())
+        Box::pin(fut.boxed().map_err(map_err))
     }
 
     fn get_epoch_uncles_by_number(
@@ -306,7 +306,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn get_headers(&self, block_hashes: Vec<HashValue>) -> FutureResult<Vec<BlockHeaderView>> {
@@ -317,7 +317,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn uncle_path(
@@ -336,7 +336,7 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 
     fn epoch_uncle_summary_by_number(
@@ -350,6 +350,6 @@ where
         }
         .map_err(map_err);
 
-        Box::new(fut.boxed().compat())
+        Box::pin(fut.boxed())
     }
 }

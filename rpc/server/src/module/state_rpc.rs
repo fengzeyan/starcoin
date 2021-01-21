@@ -49,7 +49,7 @@ where
 {
     fn get(&self, access_path: AccessPath) -> FutureResult<Option<Vec<u8>>> {
         let fut = self.service.clone().get(access_path).map_err(map_err);
-        Box::new(fut.compat())
+        Box::pin(fut)
     }
 
     fn get_with_proof(&self, access_path: AccessPath) -> FutureResult<StateWithProof> {
@@ -58,7 +58,7 @@ where
             .clone()
             .get_with_proof(access_path)
             .map_err(map_err);
-        Box::new(fut.compat())
+        Box::pin(fut)
     }
 
     fn get_account_state(&self, address: AccountAddress) -> FutureResult<Option<AccountState>> {
@@ -67,7 +67,7 @@ where
             .clone()
             .get_account_state(address)
             .map_err(map_err);
-        Box::new(fut.compat())
+        Box::pin(fut)
     }
 
     fn get_account_state_set(
@@ -119,12 +119,12 @@ where
                 }
             }
         };
-        Box::new(fut.map_err(map_err).boxed().compat())
+        Box::pin(fut.map_err(map_err).boxed())
     }
 
     fn get_state_root(&self) -> FutureResult<HashValue> {
         let fut = self.service.clone().state_root().map_err(map_err);
-        Box::new(fut.compat())
+        Box::pin(fut)
     }
 
     fn get_with_proof_by_root(
@@ -137,6 +137,6 @@ where
             .clone()
             .get_with_proof_by_root(access_path, state_root)
             .map_err(map_err);
-        Box::new(fut.compat())
+        Box::pin(fut)
     }
 }
