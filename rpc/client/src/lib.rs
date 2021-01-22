@@ -55,6 +55,7 @@ mod remote_state_reader;
 
 pub use crate::remote_state_reader::RemoteStateReader;
 use starcoin_vm_types::language_storage::{ModuleId, StructTag};
+use tokio::runtime::Runtime;
 
 #[derive(Clone)]
 enum ConnSource {
@@ -83,11 +84,15 @@ pub struct RpcClient {
 
 struct ConnectionProvider {
     conn_source: ConnSource,
+    runtime: Mutex<Runtime>,
 }
 
 impl ConnectionProvider {
-    fn new(conn_source: ConnSource) -> Self {
-        Self { conn_source }
+    fn new(conn_source: ConnSource, runtime: Runtime) -> Self {
+        Self {
+            conn_source,
+            runtime: Mutex::new(runtime),
+        }
     }
 
     fn block_on<F>(&self, future: F) -> F::Output
@@ -95,7 +100,7 @@ impl ConnectionProvider {
         F: futures03::Future + std::marker::Send,
         F::Output: std::marker::Send,
     {
-        block_on(future)
+        self.runtime.lock().block_on(future)
     }
 
     fn get_rpc_channel(&self) -> anyhow::Result<RpcChannel, jsonrpc_client_transports::RpcError> {
@@ -116,7 +121,7 @@ impl ConnectionProvider {
 impl RpcClient {
     pub(crate) fn new(conn_source: ConnSource) -> anyhow::Result<Self> {
         let (tx, rx) = oneshot::channel();
-        let provider = ConnectionProvider::new(conn_source);
+        let provider = ConnectionProvider::new(conn_source, Runtime::new()?);
         let inner: RpcClientInner = provider.get_rpc_channel().map_err(map_err)?.into(); //Self::create_client_inner(conn_source.clone()).map_err(map_err)?;
         let pubsub_client = inner.pubsub_client.clone();
         let handle = std::thread::spawn(move || {
@@ -305,22 +310,12 @@ impl RpcClient {
         &self,
         txn_request: TransactionRequest,
     ) -> anyhow::Result<SignedUserTransaction> {
-        self.call_rpc_blocking(|inner| inner
-                .account_client
-                .sign_txn_request(txn_request)
-        )
-        .map_err(map_err)
-        .and_then(|d: String| {
-            hex::decode(d.as_str().strip_prefix("0x").unwrap_or_else(|| d.as_str()))
-                .map_err(anyhow::Error::new)
-                .and_then(|d| bcs_ext::from_bytes::<SignedUserTransaction>(d.as_slice()))
-        })
         self.call_rpc_blocking(|inner| inner.account_client.sign_txn_request(txn_request))
             .map_err(map_err)
             .and_then(|d: String| {
                 hex::decode(d.as_str().strip_prefix("0x").unwrap_or_else(|| d.as_str()))
                     .map_err(anyhow::Error::new)
-                    .and_then(|d| scs::from_bytes::<SignedUserTransaction>(d.as_slice()))
+                    .and_then(|d| bcs_ext::from_bytes::<SignedUserTransaction>(d.as_slice()))
             })
     }
 
