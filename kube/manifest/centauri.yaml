@@ -102,12 +102,12 @@ spec:
           - bash
           - -c
         args:
-          - /starcoin/starcoin_txfactory --ipc-path /sc-data/centauri/starcoin.ipc -i 1000
+          - /starcoin/starcoin_txfactory --ipc-path /sc-data/centauri/starcoin.ipc --stress -n 100 -t 1 -w 5 -i 4000
         volumeMounts:
           - name: starcoin-stress-volume
             mountPath: /sc-data
       nodeSelector:
-          doks.digitalocean.com/node-pool: node-stress
+          doks.digitalocean.com/node-pool: pool-stress
   volumeClaimTemplates:
   - metadata:
       name: starcoin-stress-volume

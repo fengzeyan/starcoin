@@ -33,7 +33,7 @@ spec:
       app: starcoin-stress-new
       network: centauri
   serviceName: centauri-new-svc
-  replicas: 2
+  replicas: 4
   template:
     metadata:
       name: starcoin-stress-new
