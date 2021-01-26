@@ -33,7 +33,7 @@ spec:
       app: starcoin-stress-new
       network: centauri
   serviceName: centauri-new-svc
-  replicas: 4
+  replicas: 30
   template:
     metadata:
       name: starcoin-stress-new
@@ -48,18 +48,18 @@ spec:
           resources:
             limits:
               memory: 500Mi
-              cpu:1
+              cpu: 1
           command:
             - bash
             - -c
           args:
             -
-              rm -rf /sc-data/node0/centauri/starcoin.ipc /sc-data/node0/centauri/starcoindb/db/starcoindb/LOCK /sc-data/node0/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data/node0/ --seed $(SEED) --disable-mdns=false --rpc-address 0.0.0.0;
+              rm -rf /sc-data/centauri/starcoin.ipc /sc-data/centauri/starcoindb/db/starcoindb/LOCK /sc-data/centauri/account_vaults/LOCK;
+              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --disable-mdns=false --rpc-address 0.0.0.0;
               ret=$?;
               if [ $ret -ne 0 ]; then
               echo "Node start fail, try to remove config.";
-              rm /sc-data/node0/centauri/config.toml;
+              rm /sc-data/centauri/config.toml;
               fi;
           volumeMounts:
             - name: starcoin-stress-new-volume
