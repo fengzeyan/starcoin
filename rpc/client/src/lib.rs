@@ -9,6 +9,7 @@ use futures03::channel::oneshot;
 use futures03::{TryStream, TryStreamExt};
 use jsonrpc_client_transports::RawClient;
 use jsonrpc_core_client::{transports::ipc, transports::ws, RpcChannel};
+use network_api::PeerStrategy;
 use network_p2p_types::network_state::NetworkState;
 use parking_lot::Mutex;
 use serde_json::Value;
@@ -33,7 +34,7 @@ use starcoin_rpc_api::{
     txpool::TxPoolClient, types::TransactionEventView,
 };
 use starcoin_service_registry::{ServiceInfo, ServiceStatus};
-use starcoin_sync_api::SyncProgressReport;
+use starcoin_sync_api::{PeerScoreResponse, SyncProgressReport};
 use starcoin_txpool_api::TxPoolStatus;
 use starcoin_types::access_path::AccessPath;
 use starcoin_types::account_address::AccountAddress;
@@ -770,14 +771,24 @@ impl RpcClient {
             .map_err(map_err)
     }
 
+    pub fn sync_peer_score(&self) -> anyhow::Result<PeerScoreResponse> {
+        self.call_rpc_blocking(|inner| inner.sync_client.peer_score())
+            .map_err(map_err)
+    }
+
     pub fn sync_start(
         &self,
         force: bool,
         peers: Vec<PeerId>,
         skip_pow_verify: bool,
+        strategy: Option<PeerStrategy>,
     ) -> anyhow::Result<()> {
-        self.call_rpc_blocking(|inner| inner.sync_client.start(force, peers, skip_pow_verify))
-            .map_err(map_err)
+        self.call_rpc_blocking(|inner| {
+            inner
+                .sync_client
+                .start(force, peers, skip_pow_verify, strategy)
+        })
+        .map_err(map_err)
     }
 
     pub fn sync_cancel(&self) -> anyhow::Result<()> {

@@ -9,7 +9,7 @@ edition = "2018"
 [dependencies]
 anyhow = "1.0.38"
 thiserror = "1.0"
-serde = { version = "1.0", features = ["derive"] }
+serde = { version = "1.0.122", features = ["derive"] }
 serde_json = { version="1.0", features = ["arbitrary_precision"]}
 hex = "0.4.2"
 async-trait = "0.1"
@@ -37,3 +37,4 @@ starcoin-service-registry = { path = "../../commons/service-registry" }
 starcoin-resource-viewer = {path = "../../vm/resource-viewer"}
 serde-helpers = {path = "../../commons/serde-helpers"}
 network-p2p-types = {path = "../../network-p2p/types"}
+network-api = {path = "../../network/api", package="network-api"}
