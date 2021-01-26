@@ -9,6 +9,7 @@ use futures03::channel::oneshot;
 use futures03::{TryStream, TryStreamExt};
 use jsonrpc_client_transports::RawClient;
 use jsonrpc_core_client::{transports::ipc, transports::ws, RpcChannel};
+use network_api::PeerStrategy;
 use network_p2p_types::network_state::NetworkState;
 use parking_lot::Mutex;
 use serde_json::Value;
@@ -22,8 +23,9 @@ use starcoin_rpc_api::types::pubsub::MintBlock;
 use starcoin_rpc_api::types::{
     AccountStateSetView, AnnotatedMoveStructView, AnnotatedMoveValueView, BlockHeaderView,
     BlockSummaryView, BlockView, ChainId, ChainInfoView, ContractCall, DryRunTransactionRequest,
-    EpochUncleSummaryView, FactoryAction, PeerInfoView, SignedUserTransactionView, StrView,
-    TransactionInfoView, TransactionOutputView, TransactionRequest, TransactionView,
+    EpochUncleSummaryView, FactoryAction, PeerInfoView, SignedUserTransactionView,
+    StateWithProofView, StrView, TransactionInfoView, TransactionOutputView, TransactionRequest,
+    TransactionView,
 };
 use starcoin_rpc_api::{
     account::AccountClient, chain::ChainClient, contract_api::ContractClient, debug::DebugClient,
@@ -32,8 +34,7 @@ use starcoin_rpc_api::{
     txpool::TxPoolClient, types::TransactionEventView,
 };
 use starcoin_service_registry::{ServiceInfo, ServiceStatus};
-use starcoin_state_api::StateWithProof;
-use starcoin_sync_api::SyncProgressReport;
+use starcoin_sync_api::{PeerScoreResponse, SyncProgressReport};
 use starcoin_txpool_api::TxPoolStatus;
 use starcoin_types::access_path::AccessPath;
 use starcoin_types::account_address::AccountAddress;
@@ -42,7 +43,6 @@ use starcoin_types::block::BlockNumber;
 use starcoin_types::peer_info::{Multiaddr, PeerId};
 use starcoin_types::stress_test::TPS;
 use starcoin_types::sync_status::SyncStatus;
-use starcoin_types::system_events::SystemStop;
 use starcoin_types::transaction::{RawUserTransaction, SignedUserTransaction};
 use starcoin_vm_types::language_storage::{ModuleId, StructTag};
 use starcoin_vm_types::on_chain_resource::{EpochInfo, GlobalTimeOnChain};
@@ -523,7 +523,10 @@ impl RpcClient {
         .map_err(map_err)
     }
 
-    pub fn state_get_with_proof(&self, access_path: AccessPath) -> anyhow::Result<StateWithProof> {
+    pub fn state_get_with_proof(
+        &self,
+        access_path: AccessPath,
+    ) -> anyhow::Result<StateWithProofView> {
         self.call_rpc_blocking(|inner| async move {
             inner
                 .state_client
@@ -538,7 +541,7 @@ impl RpcClient {
         &self,
         access_path: AccessPath,
         state_root: HashValue,
-    ) -> anyhow::Result<StateWithProof> {
+    ) -> anyhow::Result<StateWithProofView> {
         self.call_rpc_blocking(|inner| async move {
             inner
                 .state_client
@@ -994,16 +997,22 @@ impl RpcClient {
             .map_err(map_err)
     }
 
+    pub fn sync_peer_score(&self) -> anyhow::Result<PeerScoreResponse> {
+        self.call_rpc_blocking(|inner| async move { inner.sync_client.peer_score().compat().await })
+            .map_err(map_err)
+    }
+
     pub fn sync_start(
         &self,
         force: bool,
         peers: Vec<PeerId>,
         skip_pow_verify: bool,
+        strategy: Option<PeerStrategy>,
     ) -> anyhow::Result<()> {
         self.call_rpc_blocking(|inner| async move {
             inner
                 .sync_client
-                .start(force, peers, skip_pow_verify)
+                .start(force, peers, skip_pow_verify, strategy)
                 .compat()
                 .await
         })
@@ -1049,7 +1058,7 @@ impl RpcClient {
     }
 
     pub fn close(self) {
-        if let Err(e) = self.chain_watcher.try_send(SystemStop) {
+        if let Err(e) = self.chain_watcher.try_send(chain_watcher::StopWatcher) {
             error!("Try to stop chain watcher error: {:?}", e);
         }
         if let Err(e) = self.watcher_handle.join() {
