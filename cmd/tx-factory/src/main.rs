@@ -485,7 +485,7 @@ impl TxnMocker {
         let expiration_timestamp = self.fetch_expiration_time();
         let mut account_list = Vec::new();
         let mut i = 0;
-        let batch_size = 50;
+        let batch_size = 25;
         let mut addr_vec = vec![];
         let mut auth_key_vec = vec![];
         let mut sub_account_list = vec![];
@@ -503,7 +503,7 @@ impl TxnMocker {
                     addr_vec.clone(),
                     auth_key_vec.clone(),
                     1000000000,
-                    10000,
+                    1,
                     expiration_timestamp,
                 )?;
                 let result = self.submit_txn(txn, self.account_address, true);
@@ -582,7 +582,7 @@ impl TxnMocker {
                     accounts[j].address,
                     accounts[j].public_key.as_single(),
                     1,
-                    1,
+                    1000,
                     sequences[index],
                     false,
                     expiration_timestamp,
