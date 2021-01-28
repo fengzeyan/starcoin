@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
         - name: starcoin
-          image: starcoin/starcoin:sha-d131223
+          image: starcoin/starcoin:sha-7e18f99
           imagePullPolicy: Always
           resources:
             limits:
@@ -55,7 +55,7 @@ spec:
           args:
             -
               rm -rf /sc-data/centauri/starcoin.ipc /sc-data/centauri/starcoindb/db/starcoindb/LOCK /sc-data/centauri/account_vaults/LOCK;
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --disable-mdns=false --rpc-address 0.0.0.0;
+              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --discover-local=true;
               ret=$?;
               if [ $ret -ne 0 ]; then
               echo "Node start fail, try to remove config.";

@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
       - name: starcoin
-        image: starcoin/starcoin:sha-d131223
+        image: starcoin/starcoin:sha-7e18f99
         imagePullPolicy: Always
         resources:
           limits:
@@ -61,10 +61,10 @@ spec:
               node_key_flag="--node-key ${node_key}";
             fi;
             if [ $POD_NAME = "starcoin-stress-0" ] && [ $DISABLE_SEED = "true" ]; then
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --disable-seed=true --disable-mdns=false $node_key_flag --rpc-address 0.0.0.0;
+              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --disable-seed=true --discover-local=true $node_key_flag;
             sleep 5;
             else
-              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --disable-mdns=false $node_key_flag --rpc-address 0.0.0.0;
+              /starcoin/starcoin  -n centauri:1 --genesis-config proxima -d /sc-data --seed $(SEED) --discover-local=true $node_key_flag;
             fi;
             ret=$?;
             if [ $ret -ne 0 ]; then
@@ -100,7 +100,7 @@ spec:
                 name: starcoin-config
                 key: start_stress_seed_node
       - name: txfactory
-        image: starcoin/starcoin:sha-d131223
+        image: starcoin/starcoin:sha-7e18f99
         imagePullPolicy: Always
         command:
           - bash
