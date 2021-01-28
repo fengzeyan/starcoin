@@ -14,13 +14,13 @@ failure = "0.1"
 # for ipc connect
 tokio01 = { version="0.1", package="tokio"}
 tokio-compat = "0.1.5"
-serde = { version = "1.0.122", features = ["derive"] }
+serde = { version = "1.0.123", features = ["derive"] }
 serde_json = { version="1.0", features = ["arbitrary_precision"]}
 hex = "~0.4"
 actix = "0.10.0"
 actix-rt = "1.1"
 tokio = "0.2"
-log = "0.4.13"
+log = "0.4.14"
 parking_lot = "0.11.1"
 jsonrpc-core = { version = "15.1.0", features = ["arbitrary_precision"] }
 jsonrpc-derive = "15.1.0"
