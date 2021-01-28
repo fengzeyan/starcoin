@@ -33,7 +33,7 @@ spec:
       app: starcoin-stress
       network: centauri
   serviceName: centauri-svc
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       name: starcoin-stress
@@ -43,8 +43,12 @@ spec:
     spec:
       containers:
       - name: starcoin
-        image: starcoin/starcoin:feature-stress
+        image: starcoin/starcoin:sha-d131223
         imagePullPolicy: Always
+        resources:
+          limits:
+            memory: 500Mi
+            cpu: 1
         command:
           - bash
           - -c
@@ -96,7 +100,7 @@ spec:
                 name: starcoin-config
                 key: start_stress_seed_node
       - name: txfactory
-        image: starcoin/starcoin:feature-stress
+        image: starcoin/starcoin:sha-d131223
         imagePullPolicy: Always
         command:
           - bash

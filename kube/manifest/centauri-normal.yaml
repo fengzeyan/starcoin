@@ -43,7 +43,7 @@ spec:
     spec:
       containers:
         - name: starcoin
-          image: starcoin/starcoin:feature-stress
+          image: starcoin/starcoin:sha-d131223
           imagePullPolicy: Always
           resources:
             limits:
