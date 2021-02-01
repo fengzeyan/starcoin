@@ -7780,6 +7780,7 @@ dependencies = [
  "jsonrpc-core",
  "jsonrpc-tcp-server",
  "libloading 0.6.7",
+ "parking_lot 0.11.1",
  "rand 0.7.3",
  "rand_core 0.6.1",
  "rust-argon2",
